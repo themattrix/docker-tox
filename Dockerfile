@@ -29,11 +29,10 @@ RUN mkdir /install \
 
 RUN pip install tox
 
-VOLUME /app
 WORKDIR /app
+VOLUME /src
 
-ONBUILD ADD requirements*.txt /app/
-ONBUILD ADD tox.ini /app/tox.ini
-ONBUILD RUN TOXSKIPSDIST=true TOXCOMMANDS=installonly tox
+ONBUILD ADD requirements*.txt tox*.ini /app/
+ONBUILD RUN tox -c tox.build.ini
 
-CMD ["tox"]
+CMD cp -rT /src/ /app/ && tox
