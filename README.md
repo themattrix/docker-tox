@@ -13,55 +13,45 @@ your project's `requirements.txt` files.
 
 The Dockerfile contains the following `ONBUILD` commands:
 
-```Dockerfile
-ONBUILD ADD requirements*.txt tox*.ini /app/
-ONBUILD RUN tox -c tox.build.ini
+```dockerfile
+ONBUILD ADD requirements*.txt tox.ini /app/
+ONBUILD RUN TOXBUILD=true tox
 ```
 
-This means your project must contain a `tox.ini`, `tox.build.ini`, and at least one
+This means your project must contain a `tox.ini` and at least one
 `requirements.txt` file.
 
 To avoid the tox environments being rebuilt every time you want to test your code,
-tox is run twice - each with a different config file:
+tox is run twice - first with the `TOXBUILD` environment variable set to `true`,
+and second without it being set:
 
-1. `tox.build.ini`
+1. `$ TOXBUILD=true tox`
 
-    Executed during the `build` phase to initialize all of the environments. This config
-    file is expected to *not* install your code nor run your tests; it should *only*
-    install the requirements which your project needs to be tested. Example:
-    
-        [tox]
-        envlist = py26,py27,py32,py33,py34,pypy,pypy3
-        skipsdist = true
+    Executed during the `build` phase to initialize all of the environments. It is
+    expected *not* to install your code nor run your tests; it should *only*
+    install the requirements which your project needs to be tested.
 
-        [testenv]
-        whitelist_externals = true
-        deps =
-            -rrequirements_test_runner.txt
-            -rrequirements_static_analysis.txt
-            -rrequirements_test.txt
-        commands = true
-    
-2. `tox.ini`
+2. `$ tox`
 
-    Executed during the `run` phase to test your code. Example:
-    
-        [tox]
-        envlist = py26,py27,py32,py33,py34,pypy,pypy3
-    
-        [testenv]
-        whitelist_externals = true
-        deps =
-            -rrequirements_test_runner.txt
-            -rrequirements_static_analysis.txt
-            -rrequirements_test.txt
-        commands =
-            flake8 setup.py "my_package"
-            pyflakes setup.py "my_package"
-            pylint --rcfile=.pylintrc "my_package"
-            nosetests "my_package"
+    Executed during the `run` phase to test your code.
+
 
 When your requirements or tox configuration changes, *both* steps are run.
 When your code changes, *only the second step is run*, saving valuable time.
+
+Example `tox.ini` supporting the TOXBUILD environment variable:
+
+    [tox]
+    envlist = py26,py27,py32,py33,py34,pypy,pypy3
+    skipsdist = {env:TOXBUILD:false}
+
+    [testenv]
+    whitelist_externals = true
+    deps =
+        -rrequirements_test_runner.txt
+        -rrequirements_static_analysis.txt
+        -rrequirements_test.txt
+    commands = {env:TOXBUILD:./tests.sh --static-analysis}
+
 
 For a full example, see the [`python-pypi-template`](https://github.com/themattrix/python-pypi-template) project, which uses this image.

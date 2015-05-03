@@ -32,7 +32,7 @@ RUN pip install tox
 WORKDIR /app
 VOLUME /src
 
-ONBUILD ADD requirements*.txt tox*.ini /app/
-ONBUILD RUN tox -c tox.build.ini
+ONBUILD ADD requirements*.txt tox.ini /app/
+ONBUILD RUN TOXBUILD=true tox
 
 CMD cp -rT /src/ /app/ && tox
