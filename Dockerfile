@@ -4,6 +4,8 @@ MAINTAINER Matthew Tardiff <mattrix@gmail.com>
 
 ENV DEBIAN_FRONTEND noninteractive
 
+RUN locale-gen en_US.UTF-8 && /usr/sbin/update-locale LANG=en_US.UTF-8
+
 RUN apt-get update \
     && apt-get -y install \
        python-software-properties software-properties-common \

@@ -46,6 +46,7 @@ Example `tox.ini` supporting the TOXBUILD environment variable:
     skipsdist = {env:TOXBUILD:false}
 
     [testenv]
+    passenv = LANG
     whitelist_externals = true
     deps =
         -rrequirements_test_runner.txt
