@@ -3,7 +3,7 @@
 *Available on Docker Hub as [`themattrix/tox`](https://registry.hub.docker.com/u/themattrix/tox/).*
 
 This image is intended for running [tox](https://tox.readthedocs.org/en/latest/) with
-Python 2.6, 2.7, 3.2, 3.3, 3.4, PyPy, and PyPy3.
+Python 2.6, 2.7, 3.2, 3.3, 3.4, 3.5, PyPy, and PyPy3.
 Its goal is to make testing your code against multiple Python versions quick and easy.
 The image contains several `ONBUILD` commands for initializing the tox environments with
 your project's `requirements.txt` files.
@@ -42,7 +42,7 @@ When your code changes, *only the second step is run*, saving valuable time.
 Example `tox.ini` supporting the TOXBUILD environment variable:
 
     [tox]
-    envlist = py26,py27,py32,py33,py34,pypy,pypy3
+    envlist = py26,py27,py32,py33,py34,py35,pypy,pypy3
     skipsdist = {env:TOXBUILD:false}
 
     [testenv]

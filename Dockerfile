@@ -18,7 +18,7 @@ RUN add-apt-repository -y ppa:fkrull/deadsnakes
 RUN apt-get update \
     && apt-get -y install \
        wget python-pip \
-       python2.6 python2.7 python3.2 python3.3 python3.4 \
+       python2.6 python2.7 python3.2 python3.3 python3.4 python3.5 \
        pypy \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
