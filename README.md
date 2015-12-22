@@ -14,12 +14,17 @@ your project's `requirements.txt` files.
 The Dockerfile contains the following `ONBUILD` commands:
 
 ```dockerfile
-ONBUILD ADD requirements*.txt tox.ini /app/
-ONBUILD RUN TOXBUILD=true tox
+ONBUILD COPY install-prereqs*.sh requirements*.txt tox.ini /app/
+ONBUILD RUN if [ -f "/app/install-prereqs.sh" ]; then \
+                bash /app/install-prereqs.sh; \
+            fi && \
+            TOXBUILD=true tox
 ```
 
-This means your project must contain a `tox.ini` and at least one
-`requirements.txt` file.
+This means your project must contain a `tox.ini` and at least one `requirements.txt` file.
+
+You can also optionally include an `install-prereqs.sh` script for installing
+prerequisites of the project requirements.
 
 To avoid the tox environments being rebuilt every time you want to test your code,
 tox is run twice - first with the `TOXBUILD` environment variable set to `true`,
