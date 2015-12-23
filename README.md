@@ -15,13 +15,17 @@ The Dockerfile contains the following `ONBUILD` commands:
 
 ```dockerfile
 ONBUILD COPY install-prereqs*.sh requirements*.txt tox.ini /app/
-ONBUILD RUN if [ -f "/app/install-prereqs.sh" ]; then \
-                bash /app/install-prereqs.sh; \
-            fi && \
-            TOXBUILD=true tox
+ONBUILD ARG SKIP_TOX=false
+ONBUILD RUN bash -c " \
+    if [ -f '/app/install-prereqs.sh' ]; then \
+        bash /app/install-prereqs.sh; \
+    fi && \
+    if [ $SKIP_TOX == false ]; then \
+        TOXBUILD=true tox; \
+    fi"
 ```
 
-This means your project must contain a `tox.ini` and at least one `requirements.txt` file.
+This means your project *must* contain a `tox.ini` file.
 
 You can also optionally include an `install-prereqs.sh` script for installing
 prerequisites of the project requirements.
@@ -36,6 +40,8 @@ and second without it being set:
     expected *not* to install your code nor run your tests; it should *only*
     install the requirements which your project needs to be tested.
 
+    This step can be skipped by specifying `--build-arg SKIP_TOX=true` in the build phase.
+
 2. `$ tox`
 
     Executed during the `run` phase to test your code.
@@ -43,6 +49,8 @@ and second without it being set:
 
 When your requirements or tox configuration changes, *both* steps are run.
 When your code changes, *only the second step is run*, saving valuable time.
+This also ensures that your code is always tested in a completely clean
+environment.
 
 Example `tox.ini` supporting the TOXBUILD environment variable:
 
