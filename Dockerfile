@@ -13,6 +13,7 @@ ENV LANG en_US.UTF-8
 RUN groupadd -r tox --gid=999 && \
     useradd -r -g tox --uid=999 tox
 
+# Install gosu to run tox as the "tox" user instead of as root.
 # https://github.com/tianon/gosu#from-debian
 ENV GOSU_VERSION 1.7
 RUN set -x && \
@@ -29,8 +30,9 @@ RUN set -x && \
     gosu nobody true && \
     apt-get purge -y --auto-remove ca-certificates wget
 
+# Install Python versions.
 RUN apt-get update && \
-    apt-get -y install \
+    apt-get -y --no-install-recommends install \
         wget \
         libssl-dev \
         libffi-dev \
@@ -39,21 +41,31 @@ RUN apt-get update && \
         software-properties-common && \
     add-apt-repository -y ppa:fkrull/deadsnakes && \
     apt-get update && \
-    apt-get -y install \
-        python2.6 \
-        python2.7 \
-        python3.3 \
-        python3.4 \
-        python3.5 \
-        pypy && \
+    apt-get -y --no-install-recommends install \
+        python2.6 python2.6-dev \
+        python2.7 python2.7-dev \
+        python3.3 python3.3-dev \
+        python3.4 python3.4-dev \
+        python3.5 python3.5-dev \
+        pypy pypy-dev && \
     apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
+# Install PyPy3 and source.
 RUN mkdir /install && \
     wget -O /install/pypy3-2.4-linux_x86_64-portable.tar.bz2 \
             "https://bitbucket.org/squeaky/portable-pypy/downloads/pypy3-2.4-linux_x86_64-portable.tar.bz2" && \
     tar jxf /install/pypy3-*.tar.bz2 -C /install && \
     rm /install/pypy3-*.tar.bz2 && \
-    ln -s /install/pypy3-*/bin/pypy3 /usr/local/bin/pypy3
+    chown -R root:root /install/pypy3-* && \
+    mv /install/pypy3-* /usr/lib/pypy3 && \
+    rm -rf /install && \
+    ln -s /usr/lib/pypy3/bin/pypy3 /usr/local/bin/pypy3
+
+# Install Python build dependencies, which some built-from-source packages require.
+RUN apt-get update && \
+    apt-get -y --no-install-recommends install \
+        make build-essential libssl-dev zlib1g-dev libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm git && \
+    apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 RUN pip install -U pip && pip install tox
 
