@@ -11,7 +11,7 @@ RUN apt-get update && \
 ENV LANG en_US.UTF-8
 
 RUN groupadd -r tox --gid=999 && \
-    useradd -r -g tox --uid=999 tox
+    useradd -m -r -g tox --uid=999 tox
 
 # Install gosu to run tox as the "tox" user instead of as root.
 # https://github.com/tianon/gosu#from-debian
