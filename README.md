@@ -11,6 +11,11 @@ your project's `requirements.txt` files.
 
 ## Usage
 
+```
+$ cd /path/to/working/dir/with/tox.ini
+$ docker run --rm -v "`pwd`:/app" themattrix/tox
+```
+
 The Dockerfile contains the following `ONBUILD` commands:
 
 ```dockerfile
