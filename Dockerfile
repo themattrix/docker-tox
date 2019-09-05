@@ -2,7 +2,7 @@ FROM themattrix/tox-base
 
 MAINTAINER Matthew Tardiff <mattrix@gmail.com>
 
-ONBUILD COPY install-prereqs*.sh requirements*.txt tox.ini /app/
+ONBUILD COPY install-prereqs*.sh requirements*.txt setup.py tox.ini /app/
 ONBUILD ARG SKIP_TOX=false
 ONBUILD RUN bash -c " \
     if [ -f '/app/install-prereqs.sh' ]; then \
